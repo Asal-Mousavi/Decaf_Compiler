@@ -1,0 +1,4 @@
+int x = 5
+for * i + 4 
+// int man = 6
+int 0x456fa
