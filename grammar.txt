@@ -1,0 +1,40 @@
+program : CLASS PROGRAM ‘{‘ field_decl* method_decl* ‘}’
+field_delc : type {IDENTIFIER
+                    | IDENTIFIER ‘[‘ {int_literal ‘]’}+ COMMA SEMI
+method_decl : { type
+                  | void } IDENTIFIER ( [ { type IDENTIFIER }+ COMMA] ) block
+block : ‘{‘ var_decl* statement* ‘}’
+var_decl : type IDENTIFIER+ COMMA SEMI
+type : INT | BOOLEAN
+statement : location ASSIGN expr SEMI
+           | method_call SEMI
+           | IF ( expr ) block [else block]
+           | WHILE ( expr ) block
+           | RETURN [ expr ] SEMI
+           | BREAK SEMI
+           | CONTINUE SEMI
+           | block
+method_call : method_name ( [expr+ COMMA])
+           | CALLOUT ( string_literal [COMMA callout_arg+ COMMA] )
+method_name : IDENTIFIER
+location : IDENTIFIER
+           | IDENTIFIER ‘[‘ expr ‘]’
+expr : location
+           | method_call
+           | literal
+           | expr bin_op expr
+           | NEGATIVE expr
+           | EXCL expr
+           | ( expr )
+callout_arg : expr | string_literal
+bin_op : ARITH_OP
+           | REP_OP
+           | EQ_OP
+           | COND_OP
+literal : int_literal
+           | char_literal
+           | bool_literal
+int_literal : DECIMAL | HEXDECIMAL
+bool_literal : TRUE | FALSE
+char_literal : CHAR
+string_literal : STRING
