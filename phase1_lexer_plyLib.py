@@ -1,4 +1,22 @@
 import ply.lex as lex
+from ply.ctokens import t_SEMI
+
+reserved = {
+'class' :'CLASS',
+'program' : 'PROGRAM',
+'void' : 'VOID',
+'int' : 'INT',
+'boolean' : 'BOOLEAN' ,
+'if' : 'IF' ,
+'else' : 'ELSE' ,
+'while' : 'WHILE' ,
+'return' : 'RETURN' ,
+'break' : 'BREAK' ,
+'continue' : 'CONTINUE' ,
+'callout' : 'CALLOUT' ,
+'true' : 'TRUE' ,
+'false' : 'FALSE' ,
+}
 
 tokens = (
     'NEWLINE',
@@ -19,8 +37,6 @@ tokens = (
 )
 
 t_NEWLINE = r"(\n)"
-t_KEYWORD = r"\b((if)|(else)|(while)|(int)|(char)|(boolean)|(return)|(break)|(continue)|" \
-            r"(callout)|(void)|(class)|(true)|(false))\b"
 t_ASSIGN = r"(=)"
 t_ARITH_OP = r"(\+ | - | \* | \/ | % | << | >> | >>>)(?![\/\/])"
 t_REP_OP = r"(>|<)(=|)"
@@ -33,6 +49,14 @@ t_CHAR = r"\'.\'"
 t_STRING = r"\".*?\""
 t_COMMENT = r"\/\/.*"
 t_TAB = r"(\t)"
+t_CLOSE = r'\}'
+t_OPEN= r'\{'
+t_C_PAR = r'\)'
+t_O_PAR= r'\('
+t_SEMI = r'\;'
+t_COMMA = r'\,'
+
+
 
 
 def t_error(t):
@@ -45,6 +69,7 @@ lexer = lex.lex()
 
 file = open("decaf.txt")
 text = file.read()
+#print(text)
 lexer.input(text)
 
 
