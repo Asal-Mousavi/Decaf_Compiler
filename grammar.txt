@@ -1,31 +1,31 @@
-program : CLASS PROGRAM ‘{‘ field_decl* method_decl* ‘}’
-field_delc : type {IDENTIFIER
-                    | IDENTIFIER ‘[‘ {int_literal ‘]’}+ COMMA SEMI
-method_decl : { type
-                  | void } IDENTIFIER ( [ { type IDENTIFIER }+ COMMA] ) block
-block : ‘{‘ var_decl* statement* ‘}’
+program : CLASS PROGRAM OPEN field_decl* method_decl* CLOSE
+field_decl : type OPEN IDENTIFIER
+                    | IDENTIFIER O_BRACKET OPEN int_literal C_BRACKET CLOSE + COMMA SEMI
+method_decl : OPEN type
+                  | void CLOSE IDENTIFIER O_PAR O_BRACKET OPEN type IDENTIFIER CLOSE+ COMMA C_BRACKET C_PAR block
+block : OPEN var_decl* statement* CLOSE
 var_decl : type IDENTIFIER+ COMMA SEMI
 type : INT | BOOLEAN
 statement : location ASSIGN expr SEMI
            | method_call SEMI
-           | IF ( expr ) block [else block]
-           | WHILE ( expr ) block
-           | RETURN [ expr ] SEMI
+           | IF O_PAR expr C_PAR block O_BRACKETelse blockC_BRACKET
+           | WHILE O_PAR expr C_PAR block
+           | RETURN O_BRACKET expr C_BRACKET SEMI
            | BREAK SEMI
            | CONTINUE SEMI
            | block
-method_call : method_name ( [expr+ COMMA])
-           | CALLOUT ( string_literal [COMMA callout_arg+ COMMA] )
+method_call : method_name O_PAR O_BRACKET expr+ COMMA C_BRACKET C_PAR
+           | CALLOUT O_PAR string_literal O_BRACKET COMMA callout_arg+ COMMA C_BRACKET C_PAR
 method_name : IDENTIFIER
 location : IDENTIFIER
-           | IDENTIFIER ‘[‘ expr ‘]’
+           | IDENTIFIER O_BRACKET expr C_BRACKET
 expr : location
            | method_call
            | literal
            | expr bin_op expr
            | NEGATIVE expr
            | EXCL expr
-           | ( expr )
+           | O_PAR expr C_PAR
 callout_arg : expr | string_literal
 bin_op : ARITH_OP
            | REP_OP
