@@ -160,4 +160,3 @@ print("----------------------------------")
 
 if parser.errorok:
     print("compiled successfully")
-
