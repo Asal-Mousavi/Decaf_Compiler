@@ -6,30 +6,36 @@ print("----------------------------------")
 
 def p_program(p):
     """
-    program : CLASS PROGRAM OPEN field_decl* method_decl* CLOSE
+    program : CLASS PROGRAM OPEN field_decl method_decl CLOSE
     """
     pass
 
 def p_field_decl(p):
     """field_decl : type OPEN IDENTIFIER
-                    | IDENTIFIER O_BRACKET OPEN int_literal C_BRACKET CLOSE + COMMA SEMI"""
+                    | IDENTIFIER O_BRACKET OPEN int_literal C_BRACKET CLOSE  COMMA SEMI
+                    | field_decl
+                    | empty
+                    """
     pass
 
 def p_method_decl(p):
     """
         method_decl : OPEN type
-                  | void CLOSE IDENTIFIER O_PAR O_BRACKET OPEN type IDENTIFIER CLOSE+ COMMA C_BRACKET C_PAR block
+                  | VOID CLOSE IDENTIFIER O_PAR O_BRACKET OPEN type IDENTIFIER CLOSE COMMA C_BRACKET C_PAR block
+                  | method_decl
+                  | empty
     """
     pass
 
 def p_block(p):
     """
-    block : OPEN var_decl* statement* CLOSE
+    block : OPEN var_decl statement CLOSE
     """
     pass
 
 def p_var_decl(p):
-    """var_decl : type IDENTIFIER+ COMMA SEMI"""
+    """var_decl : type IDENTIFIER COMMA SEMI
+                | var_decl"""
     pass
 
 def p_type(p):
@@ -40,17 +46,19 @@ def p_type(p):
 def p_statement(p):
     """statement : location ASSIGN expr SEMI
            | method_call SEMI
-           | IF O_PAR expr C_PAR block O_BRACKETelse blockC_BRACKET
+           | IF O_PAR expr C_PAR block O_BRACKET ELSE block C_BRACKET
            | WHILE O_PAR expr C_PAR block
            | RETURN O_BRACKET expr C_BRACKET SEMI
            | BREAK SEMI
            | CONTINUE SEMI
-           | block"""
+           | block
+           | statement
+    """
     pass
 
 def p_method_call(p):
-    """method_call : method_name O_PAR O_BRACKET expr+ COMMA C_BRACKET C_PAR
-           | CALLOUT O_PAR string_literal O_BRACKET COMMA callout_arg+ COMMA C_BRACKET C_PAR"""
+    """method_call : method_name O_PAR O_BRACKET expr COMMA C_BRACKET C_PAR
+           | CALLOUT O_PAR string_literal O_BRACKET COMMA callout_arg COMMA C_BRACKET C_PAR"""
     pass
 
 def p_method_name(p):
@@ -71,6 +79,7 @@ def p_expr(p):
            | NEGATIVE expr
            | EXCL expr
            | O_PAR expr C_PAR
+           | expr
     """
     pass
 
@@ -78,6 +87,7 @@ def p_callout_arg(p):
     """
     callout_arg : expr
                     | string_literal
+                    | callout_arg
     """
     pass
 
@@ -127,10 +137,6 @@ def p_string_literal(p):
     string_literal : STRING
     """
     pass
-
-
-
-
 
 
 def p_empty(p):
