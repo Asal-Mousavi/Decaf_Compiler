@@ -16,8 +16,6 @@ reserved = {
     'callout': 'CALLOUT',
     'true': 'TRUE',
     'false': 'FALSE',
-    '-': 'NEGATIVE',
-    '!': 'EXCL'
 }
 
 tokens = [
@@ -42,7 +40,9 @@ tokens = [
              'SEMI',
              'COMMA',
              'O_BRACKET',
-             'C_BRACKET'
+             'C_BRACKET',
+             'EXCL',
+             'NEGATIVE'
          ] + list(reserved.values())
 
 t_NEWLINE = r"(\n)"
@@ -65,6 +65,8 @@ t_SEMI = r'\;'
 t_COMMA = r'\,'
 t_O_BRACKET = r'\['
 t_C_BRACKET = r'\]'
+t_EXCL =  r'\!'
+t_NEGATIVE = r'-'
 
 
 def t_IDENTIFIER(t):

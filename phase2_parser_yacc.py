@@ -6,36 +6,67 @@ print("----------------------------------")
 
 def p_program(p):
     """
-    program : CLASS PROGRAM OPEN field_decl method_decl CLOSE
+    program : CLASS PROGRAM OPEN field_decl CLOSE
+            | CLASS PROGRAM OPEN method_decl CLOSE
+            | CLASS PROGRAM OPEN field_decl method_decl CLOSE
     """
     pass
 
 def p_field_decl(p):
-    """field_decl : type OPEN IDENTIFIER
-                    | IDENTIFIER O_BRACKET OPEN int_literal C_BRACKET CLOSE  COMMA SEMI
-                    | field_decl
+    """field_decl : type IDENTIFIER SEMI
+                    | type IDENTIFIER O_BRACKET int_literal C_BRACKET SEMI
+                    | field_decl field_decl
+                    | field_decl NEWLINE
                     | empty
                     """
     pass
 
 def p_method_decl(p):
     """
-        method_decl : OPEN type
-                  | VOID CLOSE IDENTIFIER O_PAR O_BRACKET OPEN type IDENTIFIER CLOSE COMMA C_BRACKET C_PAR block
-                  | method_decl
-                  | empty
+        method_decl : type_or_void IDENTIFIER O_PAR type_and_id C_PAR block
+                    | method_decl NEWLINE
+                    | method_decl method_decl
+                    | empty
     """
     pass
+
+def p_newline_or_empty(p):
+    """
+    newline-or-empty : NEWLINE
+                        | empty
+    """
+    pass
+
+#type_or_void IDENTIFIER OPEN type_and_id CLOSE block
+
+def p_type_and_id (p):
+    """
+    type_and_id : type IDENTIFIER
+                | SEMI type_and_id
+    """
+    pass
+
+
+def p_type_or_void (p):
+    """
+        type_or_void : type
+                    | VOID
+    """
+    pass
+
 
 def p_block(p):
     """
     block : OPEN var_decl statement CLOSE
+    | OPEN CLOSE
     """
     pass
 
 def p_var_decl(p):
     """var_decl : type IDENTIFIER COMMA SEMI
-                | var_decl"""
+                | var_decl var_decl NEWLINE
+                | empty
+                """
     pass
 
 def p_type(p):
@@ -46,18 +77,21 @@ def p_type(p):
 def p_statement(p):
     """statement : location ASSIGN expr SEMI
            | method_call SEMI
-           | IF O_PAR expr C_PAR block O_BRACKET ELSE block C_BRACKET
+           | IF O_PAR expr C_PAR block NEWLINE ELSE block
            | WHILE O_PAR expr C_PAR block
-           | RETURN O_BRACKET expr C_BRACKET SEMI
+           | RETURN expr SEMI
            | BREAK SEMI
            | CONTINUE SEMI
            | block
-           | statement
+           | statement statement
+           | statement NEWLINE
+           | empty
+
     """
     pass
 
 def p_method_call(p):
-    """method_call : method_name O_PAR O_BRACKET expr COMMA C_BRACKET C_PAR
+    """method_call : method_name  O_PAR expr C_PAR
            | CALLOUT O_PAR string_literal O_BRACKET COMMA callout_arg COMMA C_BRACKET C_PAR"""
     pass
 
@@ -79,7 +113,8 @@ def p_expr(p):
            | NEGATIVE expr
            | EXCL expr
            | O_PAR expr C_PAR
-           | expr
+           | expr expr
+           | expr NEWLINE
     """
     pass
 
@@ -148,7 +183,7 @@ def p_error(p):
     if p == None :
         tok = 'end of file !'
     else :
-        tok = f"{p.type}({p.value})on line {(p.lineno - 16 )}"
+        tok = f"{p.type}({p.value})on line {(p.lineno  )}"
     print(f"Synyax error : Uexpexted {tok}")
 # Build the parser
 parser = yacc.yacc()

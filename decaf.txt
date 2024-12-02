@@ -1,1 +1,18 @@
-class program {  { int }
+class program {int x ;
+void x (int sana) {
+if (x==10){
+}
+else{
+}
+while(x>=10){}
+return x ;
+}
+void y (int asal) {
+if ( !y ) {
+break;
+}
+else{
+continue;
+}
+}
+}
