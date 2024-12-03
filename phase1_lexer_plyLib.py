@@ -1,3 +1,5 @@
+from fileinput import lineno
+
 import ply.lex as lex
 from ply.ctokens import t_SEMI
 
@@ -45,7 +47,7 @@ tokens = [
              'NEGATIVE'
          ] + list(reserved.values())
 
-t_NEWLINE = r"(\n)"
+#t_NEWLINE = r"(\n)"
 t_ASSIGN = r"(=)"
 t_ARITH_OP = r"(\+ | - | \* | \/ | % | << | >> | >>>)(?![\/\/])"
 t_REP_OP = r"(>|<)(=|)"
@@ -81,6 +83,12 @@ def t_error(t):
     t.lexer.skip(1)
 
 
+def t_NEWLINE(t):
+    r"\n+"
+    t.lexer.lineno += len(t.value)
+    return t
+
+
 lexer = lex.lex()
 
 file = open("decaf.txt")
@@ -92,4 +100,3 @@ while True:
     tok = lexer.token()
     if not tok:
         break
-    #print(tok)

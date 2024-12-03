@@ -1,3 +1,5 @@
+from itertools import count
+
 import ply.yacc as yacc
 from phase1_lexer_plyLib import tokens
 INPUT_FILE = 'decaf.txt'
@@ -6,20 +8,24 @@ print("----------------------------------")
 
 def p_program(p):
     """
-    program : CLASS PROGRAM OPEN field_decl CLOSE
-            | CLASS PROGRAM OPEN method_decl CLOSE
-            | CLASS PROGRAM OPEN field_decl method_decl CLOSE
+    program : CLASS PROGRAM OPEN field_decl method_decl CLOSE
     """
     pass
 
 def p_field_decl(p):
-    """field_decl : type IDENTIFIER SEMI
-                    | type IDENTIFIER O_BRACKET int_literal C_BRACKET SEMI
+    """field_decl : type field_decl_1 SEMI
                     | field_decl field_decl
                     | field_decl NEWLINE
                     | empty
                     """
     pass
+
+def p_field_decl_1(p):
+    """field_decl_1 : IDENTIFIER
+                    | IDENTIFIER O_BRACKET int_literal C_BRACKET
+                    | field_decl_1 COMMA field_decl_1
+
+    """
 
 def p_method_decl(p):
     """
@@ -30,22 +36,12 @@ def p_method_decl(p):
     """
     pass
 
-def p_newline_or_empty(p):
-    """
-    newline-or-empty : NEWLINE
-                        | empty
-    """
-    pass
-
-#type_or_void IDENTIFIER OPEN type_and_id CLOSE block
-
 def p_type_and_id (p):
     """
     type_and_id : type IDENTIFIER
-                | SEMI type_and_id
+                | type_and_id COMMA type_and_id
     """
     pass
-
 
 def p_type_or_void (p):
     """
@@ -53,7 +49,6 @@ def p_type_or_void (p):
                     | VOID
     """
     pass
-
 
 def p_block(p):
     """
@@ -63,10 +58,15 @@ def p_block(p):
     pass
 
 def p_var_decl(p):
-    """var_decl : type IDENTIFIER COMMA SEMI
+    """var_decl : type var_decl_1 SEMI
                 | var_decl var_decl NEWLINE
                 | empty
                 """
+    pass
+
+def p_var_decl_1(p):
+    """var_decl_1 : IDENTIFIER
+                | var_decl_1 COMMA var_decl_1"""
     pass
 
 def p_type(p):
@@ -77,9 +77,9 @@ def p_type(p):
 def p_statement(p):
     """statement : location ASSIGN expr SEMI
            | method_call SEMI
-           | IF O_PAR expr C_PAR block NEWLINE ELSE block
+           | IF O_PAR expr C_PAR block NEWLINE else_or_empty
            | WHILE O_PAR expr C_PAR block
-           | RETURN expr SEMI
+           | RETURN expr_or_empty SEMI
            | BREAK SEMI
            | CONTINUE SEMI
            | block
@@ -87,6 +87,19 @@ def p_statement(p):
            | statement NEWLINE
            | empty
 
+    """
+    pass
+
+def p_expr_or_empty(p):
+    """
+    expr_or_empty : expr
+                    | empty
+    """
+
+def p_else_or_empty(p):
+    """else_or_empty : ELSE block
+                    | else_or_empty else_or_empty
+                    | empty
     """
     pass
 
@@ -135,7 +148,6 @@ def p_bin_op(p):
     """
     pass
 
-
 def p_literal(p):
     """
     literal : int_literal
@@ -151,7 +163,6 @@ def p_int_literal(p):
     """
     pass
 
-
 def p_bool_literal(p):
     """
     bool_literal : TRUE
@@ -159,13 +170,11 @@ def p_bool_literal(p):
     """
     pass
 
-
 def p_char_literal(p):
     """
     char_literal : CHAR
     """
     pass
-
 
 def p_string_literal(p):
     """
@@ -173,18 +182,21 @@ def p_string_literal(p):
     """
     pass
 
-
 def p_empty(p):
     """ empty : """
     pass
 
-
 def p_error(p):
+    line_number = 0
     if p == None :
         tok = 'end of file !'
     else :
-        tok = f"{p.type}({p.value})on line {(p.lineno  )}"
+        file = open("decaf.txt", "r")
+        for line_number, line in enumerate(file, start=1):
+            pass
+        tok = f"{p.type}({p.value})on line {(p.lineno - line_number + 1)}"
     print(f"Synyax error : Uexpexted {tok}")
+
 # Build the parser
 parser = yacc.yacc()
 
@@ -192,7 +204,6 @@ def read_input_file(input_file: str = INPUT_FILE) -> str:
     try:
         with open(input_file, 'r') as file:
             result = file.read()
-
             return result
     except FileNotFoundError as e:
         print(e)

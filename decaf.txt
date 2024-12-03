@@ -1,18 +1,23 @@
-class program {int x ;
-void x (int sana) {
+class program {int x , y;
+int x [2] , y [3] ;
+int hi , bi ;
+void x (int sana , int asal) {
+int hi , bi ;
+boolean hi , bi ;
 if (x==10){
+boolean hi , bi ;
+return ;
 }
 else{
 }
-while(x>=10){}
+while(x>=10){
+boolean hi , bi ;
+}
 return x ;
 }
-void y (int asal) {
+int y (int asal) {
 if ( !y ) {
 break;
-}
-else{
-continue;
 }
 }
 }
