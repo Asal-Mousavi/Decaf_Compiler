@@ -1,0 +1,103 @@
+program : CLASS PROGRAM OPEN field_decl method_decl CLOSE
+
+field_decl : type field_decl_1 SEMI
+                    | field_decl field_decl
+                    | field_decl NEWLINE
+                    | empty
+
+field_decl_1 : IDENTIFIER
+                    | IDENTIFIER O_BRACKET int_literal C_BRACKET
+                    | field_decl_1 COMMA field_decl_1
+
+method_decl : type_or_void IDENTIFIER O_PAR type_and_id C_PAR block
+                    | method_decl NEWLINE
+                    | method_decl method_decl
+                    | empty
+
+type_or_void : type
+                    | VOID
+
+type_and_id : type IDENTIFIER
+                | type_and_id COMMA type_and_id
+
+block : OPEN var_decl statement CLOSE
+    | OPEN CLOSE
+
+var_decl : type var_decl_1 SEMI
+                | var_decl var_decl NEWLINE
+                | empty
+
+var_decl_1 : IDENTIFIER
+                | var_decl_1 COMMA var_decl_1
+
+type : INT
+            | BOOLEAN
+
+statement : location ASSIGN expr SEMI
+           | method_call SEMI
+           | IF O_PAR expr C_PAR block NEWLINE else_or_empty
+           | WHILE O_PAR expr C_PAR block
+           | RETURN expr_or_empty SEMI
+           | BREAK SEMI
+           | CONTINUE SEMI
+           | block
+           | statement statement
+           | statement NEWLINE
+           | empty
+
+method_call : method_name  O_PAR arg C_PAR
+           | CALLOUT O_PAR string_literal C_PAR
+           | CALLOUT O_PAR string_literal COMMA call COMMA C_PAR
+
+method_name : IDENTIFIER
+
+arg : expr
+   | expr COMMA arg
+
+call : callout_arg
+     | callout_arg call
+
+callout_arg : expr
+                    | string_literal
+                    | callout_arg
+
+expr : location
+           | method_call
+           | literal
+           | expr bin_op expr
+           | NEGATIVE expr
+           | EXCL expr
+           | O_PAR expr C_PAR
+           | expr expr
+           | expr NEWLINE
+
+location : IDENTIFIER
+           | IDENTIFIER O_BRACKET expr C_BRACKET
+
+expr_or_empty : expr
+                    | empty
+
+else_or_empty : ELSE block
+                    | else_or_empty else_or_empty
+                    | empty
+
+bin_op : ARITH_OP
+           | REP_OP
+           | EQ_OP
+           | COND_OP
+
+literal : int_literal
+           | char_literal
+           | bool_literal
+
+int_literal : DECIMAL
+                    | HEXDECIMAL
+
+bool_literal : TRUE
+                    | FALSE
+
+char_literal : CHAR
+
+string_literal : STRING
+
+empty :

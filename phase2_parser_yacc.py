@@ -2,15 +2,18 @@ from itertools import count
 
 import ply.yacc as yacc
 from phase1_lexer_plyLib import tokens
+
 INPUT_FILE = 'decaf.txt'
 OUTPUT_FILE = 'parser_out'
 print("----------------------------------")
+
 
 def p_program(p):
     """
     program : CLASS PROGRAM OPEN field_decl method_decl CLOSE
     """
     pass
+
 
 def p_field_decl(p):
     """field_decl : type field_decl_1 SEMI
@@ -20,12 +23,14 @@ def p_field_decl(p):
                     """
     pass
 
+
 def p_field_decl_1(p):
     """field_decl_1 : IDENTIFIER
                     | IDENTIFIER O_BRACKET int_literal C_BRACKET
                     | field_decl_1 COMMA field_decl_1
 
     """
+
 
 def p_method_decl(p):
     """
@@ -36,19 +41,22 @@ def p_method_decl(p):
     """
     pass
 
-def p_type_and_id (p):
+
+def p_type_and_id(p):
     """
     type_and_id : type IDENTIFIER
                 | type_and_id COMMA type_and_id
     """
     pass
 
-def p_type_or_void (p):
+
+def p_type_or_void(p):
     """
         type_or_void : type
                     | VOID
     """
     pass
+
 
 def p_block(p):
     """
@@ -57,6 +65,7 @@ def p_block(p):
     """
     pass
 
+
 def p_var_decl(p):
     """var_decl : type var_decl_1 SEMI
                 | var_decl var_decl NEWLINE
@@ -64,15 +73,18 @@ def p_var_decl(p):
                 """
     pass
 
+
 def p_var_decl_1(p):
     """var_decl_1 : IDENTIFIER
                 | var_decl_1 COMMA var_decl_1"""
     pass
 
+
 def p_type(p):
     """type : INT
                 | BOOLEAN"""
     pass
+
 
 def p_statement(p):
     """statement : location ASSIGN expr SEMI
@@ -90,11 +102,13 @@ def p_statement(p):
     """
     pass
 
+
 def p_expr_or_empty(p):
     """
     expr_or_empty : expr
                     | empty
     """
+
 
 def p_else_or_empty(p):
     """else_or_empty : ELSE block
@@ -103,19 +117,34 @@ def p_else_or_empty(p):
     """
     pass
 
+
 def p_method_call(p):
-    """method_call : method_name  O_PAR expr C_PAR
-           | CALLOUT O_PAR string_literal O_BRACKET COMMA callout_arg COMMA C_BRACKET C_PAR"""
+    """
+    method_call : method_name  O_PAR arg C_PAR
+           | CALLOUT O_PAR string_literal C_PAR
+           | CALLOUT O_PAR string_literal COMMA call COMMA C_PAR
+    """
     pass
+
 
 def p_method_name(p):
     """method_name : IDENTIFIER"""
     pass
 
+
+def p_arg(p):
+    """
+    arg : expr
+      | expr COMMA arg
+   """
+    pass
+
+
 def p_location(p):
     """ location : IDENTIFIER
            | IDENTIFIER O_BRACKET expr C_BRACKET"""
     pass
+
 
 def p_expr(p):
     """
@@ -131,6 +160,15 @@ def p_expr(p):
     """
     pass
 
+
+def p_call(p):
+    """
+    call : callout_arg
+     | callout_arg call
+     """
+    pass
+
+
 def p_callout_arg(p):
     """
     callout_arg : expr
@@ -138,6 +176,7 @@ def p_callout_arg(p):
                     | callout_arg
     """
     pass
+
 
 def p_bin_op(p):
     """
@@ -148,6 +187,7 @@ def p_bin_op(p):
     """
     pass
 
+
 def p_literal(p):
     """
     literal : int_literal
@@ -156,12 +196,14 @@ def p_literal(p):
     """
     pass
 
+
 def p_int_literal(p):
     """
     int_literal : DECIMAL
                     | HEXDECIMAL
     """
     pass
+
 
 def p_bool_literal(p):
     """
@@ -170,11 +212,13 @@ def p_bool_literal(p):
     """
     pass
 
+
 def p_char_literal(p):
     """
     char_literal : CHAR
     """
     pass
+
 
 def p_string_literal(p):
     """
@@ -182,23 +226,27 @@ def p_string_literal(p):
     """
     pass
 
+
 def p_empty(p):
     """ empty : """
     pass
 
+
 def p_error(p):
     line_number = 0
-    if p == None :
+    if p == None:
         tok = 'end of file !'
-    else :
+    else:
         file = open("decaf.txt", "r")
         for line_number, line in enumerate(file, start=1):
             pass
         tok = f"{p.type}({p.value})on line {(p.lineno - line_number + 1)}"
     print(f"Synyax error : Uexpexted {tok}")
 
+
 # Build the parser
 parser = yacc.yacc()
+
 
 def read_input_file(input_file: str = INPUT_FILE) -> str:
     try:
@@ -207,6 +255,8 @@ def read_input_file(input_file: str = INPUT_FILE) -> str:
             return result
     except FileNotFoundError as e:
         print(e)
+
+
 parser.parse(read_input_file(INPUT_FILE))
 print("----------------------------------")
 

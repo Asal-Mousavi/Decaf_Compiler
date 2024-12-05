@@ -4,6 +4,7 @@ int hi , bi ;
 void x (int sana , int asal) {
 int hi , bi ;
 boolean hi , bi ;
+hi = 5;
 if (x==10){
 boolean hi , bi ;
 return ;
@@ -19,5 +20,8 @@ int y (int asal) {
 if ( !y ) {
 break;
 }
+func (a0,a1, a2 );
+callout ("func1");
+callout ("func2",(id),);
 }
 }
