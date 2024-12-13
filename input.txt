@@ -1,0 +1,12 @@
+class program {
+int x;
+void func0(int a0){
+boolean t0;
+t0 = true;
+if(x==3){
+boolean hi , bi ;
+x = false;
+}
+}
+
+}

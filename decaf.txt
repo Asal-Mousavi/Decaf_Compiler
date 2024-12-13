@@ -5,8 +5,9 @@ void x (int sana , int asal) {
 int hi , bi ;
 boolean hi , bi ;
 hi = 5;
-if (x==10){
+if (y==10){
 boolean hi , bi ;
+
 return ;
 }
 else{

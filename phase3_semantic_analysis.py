@@ -4,6 +4,21 @@ from phase1_lexer_plyLib import tokens
 INPUT_FILE = 'input.txt'
 OUTPUT_FILE = 'parser_out'
 print("----------------------------------")
+symbol_table = {}
+
+
+def add_to_symbol_table(name, var_type):
+    if name in symbol_table:
+        print(f"Semantic error : Variable '{name}' already declared.")
+        parser.errorok = False
+    symbol_table[name] = {"type": var_type}
+
+
+def check_symbol_table(name):
+    if name in symbol_table:
+        return symbol_table[name]
+    print(f"Semantic error : Variable '{name}' not declared.")
+    parser.errorok = False
 
 
 def p_program(p):
@@ -26,8 +41,9 @@ def p_field_decl_1(p):
     """field_decl_1 : IDENTIFIER
                     | IDENTIFIER O_BRACKET int_literal C_BRACKET
                     | field_decl_1 COMMA field_decl_1
-
     """
+    if len(p) == 2:  # Single identifier
+        add_to_symbol_table(p[1], p[-1])
 
 
 def p_method_decl(p):
@@ -45,7 +61,8 @@ def p_type_and_id(p):
     type_and_id : type IDENTIFIER
                 | type_and_id COMMA type_and_id
     """
-    pass
+    if len(p) == 3:  # Single type and identifier
+        add_to_symbol_table(p[2], p[1])
 
 
 def p_type_or_void(p):
@@ -75,13 +92,14 @@ def p_var_decl(p):
 def p_var_decl_1(p):
     """var_decl_1 : IDENTIFIER
                 | var_decl_1 COMMA var_decl_1"""
-    pass
+    if len(p) == 2:  # Single identifier
+        add_to_symbol_table(p[1], p[-1])
 
 
 def p_type(p):
     """type : INT
                 | BOOLEAN"""
-    pass
+    p[0] = p[1]
 
 
 def p_statement(p):
@@ -96,9 +114,16 @@ def p_statement(p):
            | statement statement
            | statement NEWLINE
            | empty
-
     """
-    pass
+    if parser.errorok:
+        if len(p) > 3 and p[2] == '=':  # Assignment
+            var_name = p[1]
+            var = check_symbol_table(var_name)
+            var_type = var['type']
+            expr_type = p[3]
+            if var_type != expr_type:
+                print(f"Type mismatch: for Variable {var_name} type {var_type} expected, got {expr_type}.")
+                parser.errorok = False
 
 
 def p_expr_or_empty(p):
@@ -141,22 +166,33 @@ def p_arg(p):
 def p_location(p):
     """ location : IDENTIFIER
            | IDENTIFIER O_BRACKET expr C_BRACKET"""
-    pass
+    var_name = p[1]
+    check_symbol_table(var_name)
+    p[0] = var_name
 
 
 def p_expr(p):
     """
     expr : location
-           | method_call
-           | literal
-           | expr bin_op expr
-           | NEGATIVE expr
-           | EXCL expr
-           | O_PAR expr C_PAR
-           | expr expr
-           | expr NEWLINE
+         | literal
+         | expr bin_op expr
+         | NEGATIVE expr
+         | EXCL expr
+         | O_PAR expr C_PAR
     """
-    pass
+    if len(p) == 2:  # Single element like location or literal
+        p[0] = p[1]  # Pass the type or identifier from location/literal
+    elif len(p) == 4:
+        if p[2] in ('+', '-', '*', '/'):  # Binary operation
+            left_type = p[1]
+            right_type = p[3]
+            if left_type != 'int' or right_type != 'int':
+                raise TypeError(f"Arithmetic operations require integers: {left_type} and {right_type}")
+            p[0] = 'int'  # Result of arithmetic operations is an int
+        elif p[1] == '(' and p[3] == ')':  # Parentheses
+            p[0] = p[2]  # Propagate inner expression type
+    elif len(p) == 3:  # Unary operators like NEGATIVE or EXCL
+        p[0] = p[2]  # Type remains the same for unary operations
 
 
 def p_call(p):
@@ -192,7 +228,7 @@ def p_literal(p):
            | char_literal
            | bool_literal
     """
-    pass
+    p[0] = p[1]
 
 
 def p_int_literal(p):
@@ -200,7 +236,7 @@ def p_int_literal(p):
     int_literal : DECIMAL
                     | HEXDECIMAL
     """
-    pass
+    p[0] = 'int'
 
 
 def p_bool_literal(p):
@@ -208,21 +244,21 @@ def p_bool_literal(p):
     bool_literal : TRUE
                     | FALSE
     """
-    pass
+    p[0] = 'boolean'
 
 
 def p_char_literal(p):
     """
     char_literal : CHAR
     """
-    pass
+    p[0] = 'char'
 
 
 def p_string_literal(p):
     """
     string_literal : STRING
     """
-    pass
+    p[0] = 'char[]'
 
 
 def p_empty(p):
@@ -239,7 +275,7 @@ def p_error(p):
         for line_number, line in enumerate(file, start=1):
             pass
         tok = f"{p.type}({p.value})on line {(p.lineno - line_number + 1)}"
-    print(f"Syntax error : Unexpected {tok}")
+    print(f"Syntax error : unexpected {tok}")
 
 
 # Build the parser
@@ -248,7 +284,7 @@ parser = yacc.yacc()
 
 def read_input_file(input_file: str = INPUT_FILE) -> str:
     try:
-        with open(input_file, 'r') as file:
+        with open('input.txt', 'r') as file:
             result = file.read()
             return result
     except FileNotFoundError as e:
@@ -260,3 +296,4 @@ print("----------------------------------")
 
 if parser.errorok:
     print("compiled successfully")
+    print(symbol_table)
