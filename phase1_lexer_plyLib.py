@@ -1,7 +1,4 @@
-from fileinput import lineno
-
 import ply.lex as lex
-from ply.ctokens import t_SEMI
 
 reserved = {
     'class': 'CLASS',
@@ -47,7 +44,7 @@ tokens = [
              'NEGATIVE'
          ] + list(reserved.values())
 
-#t_NEWLINE = r"(\n)"
+# t_NEWLINE = r"(\n)"
 t_ASSIGN = r"(=)"
 t_ARITH_OP = r"(\+ | - | \* | \/ | % | << | >> | >>>)(?![\/\/])"
 t_REP_OP = r"(>|<)(=|)"
@@ -67,7 +64,7 @@ t_SEMI = r'\;'
 t_COMMA = r'\,'
 t_O_BRACKET = r'\['
 t_C_BRACKET = r'\]'
-t_EXCL =  r'\!'
+t_EXCL = r'\!'
 t_NEGATIVE = r'-'
 
 
@@ -93,7 +90,6 @@ lexer = lex.lex()
 
 file = open("decaf.txt")
 text = file.read()
-# print(text)
 lexer.input(text)
 
 while True:

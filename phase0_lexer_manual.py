@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class Token:
     def __init__(self, number, type_name, final_state):
         self.number = number
@@ -10,7 +11,7 @@ class Token:
         return self.type_name
 
 
-def tokenize(input_string, dfa,line):
+def tokenize(input_string, dfa, line):
     count = 0
     input_string += " "
     state = 0
@@ -21,8 +22,8 @@ def tokenize(input_string, dfa,line):
         index = index_of_alpha(char)
         if index < 0:
             print("syntax error on " + word
-                  + f" in line %i character %i" %(line,count) )
-            word =""
+                  + f" in line %i character %i" % (line, count))
+            word = ""
             continue
 
         state = int(dfa[int(state)][index + 1])
@@ -31,19 +32,20 @@ def tokenize(input_string, dfa,line):
             word = ""
 
 
-
 def index_of_alpha(char):
     alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_=+)(0 "
     if char in alpha:
         return alpha.index(char)
-    else :
+    else:
         return -1
+
 
 def check_comment(text):
     if text[:2] == "//":
         return True
     else:
         return False
+
 
 # main code
 df = pd.read_csv('TABLE1.csv')
@@ -75,13 +77,8 @@ with open("decaf.txt") as file:
     for line in file:
         count_line += 1
         text = line.strip()
-        if(check_comment(text)):
+        if (check_comment(text)):
             continue
         tokenize(text, df, count_line)
 
 file.close()
-
-#text = input("Enter your TEXT: ")
-
-
-
