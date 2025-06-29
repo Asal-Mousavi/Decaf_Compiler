@@ -3,10 +3,11 @@
 This project implements a fully functional compiler for the Decaf programming language — a simplified, Java-like language designed for teaching compiler construction. The compiler is structured into four main phases: Lexical Analysis, Parsing, Semantic Analysis, and groundwork for Code Generation.
 
 It demonstrates fundamental compiler design concepts through modular, readable, and testable Python code.
+> 🗓️ Created: December 2024 | 🎓 5th Semester, Compiler Design Project: A Full Pipeline for a Simplified Java-like Language  
 
 ---
 
-## 📦 Project Structure
+## Project Structure
 
 | File | Description                                    |
 |------|------------------------------------------------|
